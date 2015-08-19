@@ -1,0 +1,58 @@
+#ui {
+  margin: 0% 10%;
+  max-width: 500px;
+}
+#ui .game tr {
+  margin:2px solid transparent;
+}
+.result, .circle, .circle>div {
+  width:40px;
+  height:40px;
+}
+.result>table{
+  margin: auto;
+}
+.mini_circle,.mini_circle>div {
+  width:15px;
+  height:15px;
+}
+.current .circle {
+  border: 2px solid #333;
+}
+.circle>div,.mini_circle>div {
+  border-radius:30px;
+  border:2px solid #777;
+}
+.circle .grey,.mini_circle .grey {
+  background-color: #AAA;
+}
+.mini_circle .black { background-color: #000; }
+.mini_circle .white { background-color: #FFF; }
+.board {
+  float:right;
+}
+.try {
+  border:2px solid #000;
+}
+.R { background-color: red;}
+.G { background-color: green;}
+.Y { background-color: yellow;}
+.B { background-color: blue;}
+.V { background-color: purple;}
+.O { background-color: orange;}
+#buttons {
+  margin-top:10px;
+}
+@media (max-width:600px){
+  .board {
+    float:none;
+    margin-bottom:30px;
+  }
+}
+.alert {
+  margin-top: 20px;
+  padding-top: 0px;
+}
+.alert button {
+  color:#333;
+}

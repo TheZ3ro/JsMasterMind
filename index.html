@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mastermind</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Mastermind Engine -->
+	<script src="./mind.js"></script>
+
+  <!-- Loading Bootstrap -->
+  <link href="./css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+  <!--[if lt IE 9]>
+    <script src="./js/vendor/html5shiv.js"></script>
+    <script src="./js/vendor/respond.min.js"></script>
+  <![endif]-->
+
+  <link href="./css/main.css" rel="stylesheet">
+</head>
+<body>
+	<div id="ui">
+		<h1>JsMasterMind</h1>
+	</div>
+	<script src="./js/vendor/jquery.min.js"></script>
+  <script src="./js/bootstrap.min.js"></script>
+	<script>
+    var m=new Mind();
+		m.generate();
+
+		var ntry=0,cell=0,tcode="";
+
+		$("#ui").append($(document.createElement("div")).addClass("board"));
+		$("#ui").append($(document.createElement("table")).addClass("game"));
+
+		//Game Board
+		for(var i=0;i<10;i++){
+			$("#ui .game").append(document.createElement("tr"));
+		}
+		for(var j=0;j<4;j++){
+			$("#ui .game tr").append($(document.createElement("td")).addClass("circle"));
+		}
+		$("#ui .circle").append($(document.createElement("div")).addClass("grey"));
+		$("#ui .game tr").append($(document.createElement("td")).addClass("result"));
+		$($("#ui .game tr")[ntry]).addClass("try");
+		$("#ui .game tr .result").append($("<table><tr><td></td><td></td></tr><tr><td></td><td></td></tr></table>"));
+		$("#ui .game tr .result table td").addClass("mini_circle");
+		$("#ui .game .mini_circle").append($(document.createElement("div")).addClass("grey"));
+		// Select Board
+		$("#ui .board").append("<h1>Board</h1>");
+		$("#ui .board").append($(document.createElement("table")).addClass("select"));
+		$("#ui .board .select").append(document.createElement("tr"));
+		for(var j=0;j<6;j++){
+			$("#ui .board .select tr").append($(document.createElement("td")).addClass("circle"));
+			$($("#ui .board .select tr td")[j]).append($(document.createElement("div")).addClass(m.dict[j]));
+		}
+		// Current Board
+		$("#ui .board").append("<h1 id=\"text\">Current Try</h1>");
+		$("#ui .board").append($(document.createElement("table")).addClass("current"));
+		$("#ui .board .current").append(document.createElement("tr"));
+		for(var j=0;j<4;j++){
+			$("#ui .board .current tr").append($(document.createElement("td")).addClass("circle"));
+		}
+		$("#ui .board").append($("<div id='buttons'></div>"));
+		$("#ui .board #buttons").append($("<button id='clear' onClick='clear_try()'>Clear</button>"));
+		$("#ui .board #buttons").append($("<button id='check' onClick='check()'>Check</button>"));
+
+		//Events
+		$("#ui .board .select tr td div").click(function(){
+			if(cell<4){
+				var c=$(this).attr("class");
+				$($("#ui .board .current tr td")[cell]).append($(document.createElement("div")).addClass(c));
+				tcode+=c;
+				cell+=1;
+			}else{
+				$("#check").focus();
+			}
+		});
+
+		function clear_try(){
+			$("#ui .board .current tr td").empty("div");
+			cell=0;
+			tcode="";
+		}
+
+		function check(){
+			if(tcode.length==4){
+				//Draw this try
+				tr=$("#ui .game tr")[ntry*3];
+				for(var i=0;i<4;i++){
+					current=$("#ui .board .current tr td")[i];
+					var c=$($(current).find("div")).attr("class");
+					td=$(tr).find("td.circle")[i];
+					$(td).find("div").removeClass("grey").addClass(c);
+				}
+				//Check solution
+				var r=m.check(tcode);
+				for(var i=0;i<r.p;i++){
+					$($(".try .result td")[i]).find("div").removeClass("grey").addClass("black");
+				}
+				for(var i=0;i<r.c;i++){
+					$($(".try .result td")[i+r.p]).find("div").removeClass("grey").addClass("white");
+				}
+				//Update the try
+
+				if(r.p==4){
+					solution(true);
+				}else{
+					if(ntry==9){
+						solution(false);
+					}else{
+						$($("#ui .game tr")[ntry*3]).removeClass("try");
+						ntry+=1;
+						$($("#ui .game tr")[ntry*3]).addClass("try");
+						clear_try();
+					}
+				}
+			}else{
+				alert("Error, code too short");
+			}
+		}
+
+		function solution(win){
+			clear_try();
+			$("#text").text("The code was:");
+			for(var i=0;i<m.code.length;i++){
+				$($("#ui .board .current tr td")[i]).append($(document.createElement("div")).addClass(m.code[i]));
+			}
+			$("#clear").attr("disabled",true);
+			$("#check").attr("disabled",true);
+			reload_button="<button id=\"reload\" onClick=\"reload()\">Reload</button>";
+			if(win){
+				$("#ui .board").append("<div class=\"alert alert-success\" role=\"alert\"><h3>You Win!</h3>"+reload_button+"</div>");
+			}else{
+				$("#ui .board").append("<div class=\"alert alert-danger\" role=\"alert\"><h3>You Lose</h3>"+reload_button+"</div>");
+			}
+		}
+
+		function reload(){
+			location.reload();
+		}
+
+	</script>
+</body>
+</html>
