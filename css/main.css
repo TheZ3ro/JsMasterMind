@@ -1,6 +1,12 @@
+.container-fluid {
+  margin: 0 3%;
+}
 #ui {
-  margin: 0% 10%;
-  max-width: 60%;
+  margin-top:10px;
+  margin-bottom:30px;
+}
+.game,.board{
+  margin: 0 auto;
 }
 #ui>h1 {
   text-align: center;
@@ -31,33 +37,47 @@
 }
 .mini_circle .black { background-color: #000; }
 .mini_circle .white { background-color: #FFF; }
-.game {
-  float:right;
-}
-.board {
-  float: right;
-  margin-left: 5%;
-}
 .try {
   border:2px solid #000;
 }
-.R { background-color: red;}
-.G { background-color: green;}
-.Y { background-color: yellow;}
-.B { background-color: blue;}
-.V { background-color: purple;}
-.O { background-color: orange;}
-.N { background-color: black;}
-.W { background-color: white;}
-.A { background-color: grey;}
-.P { background-color: pink;}
+.numbers {
+  margin: 8px 14px;
+  position: absolute;
+  font-weight: bold;
+  color: #333;
+}
+.R { background-color: red;} .R>span::after {content:"1";}
+.G { background-color: green;} .G>span::after {content:"2";}
+.Y { background-color: yellow;} .Y>span::after {content:"3";}
+.B { background-color: blue;} .B>span::after {content:"4";}
+.V { background-color: purple;} .V>span::after {content:"5";}
+.O { background-color: orange;} .O>span::after {content:"6";}
+.N { background-color: black;} .N>span::after {content:"7";}
+.W { background-color: white;} .W>span::after {content:"8";}
+.A { background-color: grey;} .A>span::after {content:"9";}
+.P { background-color: pink;} .P>span::after {content:"0";}
 #buttons {
   margin-top:10px;
 }
+footer {
+  margin-top: 30px;
+}
 @media (max-width:600px){
-  .board {
-    float:none;
-    margin-bottom:30px;
+  /* bootstrap hack*/
+  .col-xs-6 {
+    width: 100%;
+  }
+  #ui {
+    max-width: 50%;
+    margin: auto;
+  }
+  .info {
+    display:none;
+  }
+}
+@media (max-width:500px){
+  #ui {
+    max-width: 80%;
   }
 }
 .alert {
@@ -67,3 +87,8 @@
 .alert button {
   color:#333;
 }
+@font-face {
+  font-family: "BKC";
+  src: url(../bkc.ttf) format("truetype");
+}
+.bkc { font-family: "BKC", sans-serif;font-size: 20px; }

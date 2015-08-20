@@ -19,7 +19,13 @@
   <link href="./css/main.css" rel="stylesheet">
 </head>
 <body>
-	<div id="ui">
+	<div class="container-fluid">
+		<div class="row"><h1>JsMasterMind</h1></div>
+		<div class="row" id="ui">
+				<div class="col-sm-6 col-md-6 col-xs-6 game_td"></div>
+				<div class="col-sm-6 col-md-6 col-xs-6 board_td"></div>
+		</div>
+		<footer class="row">Made by <a href="http://thez3ro.github.io">TheZero</a></footer>
 	</div>
 	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 		<div class="modal-dialog" role="document">
@@ -32,6 +38,7 @@
 					<form id="addForm">
 						<input name="try" type="text" class="form-control" placeholder="Number of Try (default 10, max 20)"/><br/>
 						<input name="colors" type="text" class="form-control" placeholder="Number of Colors (default 6, max 10)"/><br/>
+						<strong>NB.</strong><span>A <b>Code length</b> value too high can brake the website design</span>
 						<input name="code" type="text" class="form-control" placeholder="Code Length (default 4, max 10)"/><br/>
 					</form>
 				</div>
@@ -59,10 +66,10 @@
 		});
 
 		function draw(dtry,dcolor,dcode){
-			$("#ui").empty();
-			$("#ui").append("<h1>JsMasterMind</h1>");
-			$("#ui").append($(document.createElement("div")).addClass("board"));
-			$("#ui").append($(document.createElement("table")).addClass("game"));
+			$("#ui .board_td").empty();
+			$("#ui .game_td").empty();
+			$("#ui .board_td").append($(document.createElement("div")).addClass("board"));
+			$("#ui .game_td").append($(document.createElement("table")).addClass("game"));
 			//Game Board
 			for(var i=0;i<dtry;i++){
 				$("#ui .game").append(document.createElement("tr"));
@@ -99,12 +106,16 @@
 			for(var j=0;j<dcode;j++){
 				$("#ui .board .current tr").append($(document.createElement("td")).addClass("circle"));
 			}
+			$("#ui .circle div").append($(document.createElement("span")).addClass("numbers"));
+
+			// Buttons
 			$("#ui .board").append($("<div id='buttons'></div>"));
 			$("#ui .board #buttons").append($("<button id='options' onClick='opt()'>Options</button>"));
 			$("#ui .board #buttons").append($("<button id='clear' onClick='clear_try()'>Clear</button>"));
 			$("#ui .board #buttons").append($("<button id='check' onClick='check()'>Check</button>"));
+			$("#ui .board #buttons").append($("<br/><span class='info'>You can also use number from <span class='bkc'>0</span> to <span class='bkc'>9</span><br/>in your keyboard to select color and <span class='bkc'>e</span> to check</span>"));
 
-			//Events
+			// Events
 			$("#ui .board .select tr td div").click(function(){
 				if(cell<board.code){
 					var c=$(this).attr("class");
@@ -115,12 +126,59 @@
 					$("#check").focus();
 				}
 			});
+
+			$(document.body).on('keydown', function(e) {
+				// 48-57 < 13
+				var c="",i=-1;
+		    switch (e.which) {
+					case 8:
+					  del();break;
+	        case 13:
+            check();break;
+	        case 48:
+            i=9;break;
+					case 49:
+						i=0;break;
+					case 50:
+						i=1;break;
+					case 51:
+						i=2;break;
+					case 52:
+						i=3;break;
+					case 53:
+						i=4;break;
+					case 54:
+						i=5;break;
+					case 55:
+						i=6;break;
+					case 56:
+						i=7;break;
+					case 57:
+						i=8;break;
+		    }
+				if(i!=null && i<board.color && i>=0){
+					if(cell<board.code){
+						c=$($("#ui .board .select tr td")[i]).find("div").attr("class");
+						$($("#ui .board .current tr td")[cell]).append($(document.createElement("div")).addClass(c));
+						tcode+=c;
+						cell+=1;
+					}
+				}
+			});
 		}
 
 		function clear_try(){
 			$("#ui .board .current tr td").empty("div");
 			cell=0;
 			tcode="";
+		}
+
+		function del(){
+			if(cell>0){
+				cell-=1;
+				$($("#ui .board .current tr td")[cell]).empty("div");
+				tcode=tcode.substr(0,tcode.length-1);
+			}
 		}
 
 		function check(){
@@ -168,6 +226,7 @@
 			}
 			$("#clear").attr("disabled",true);
 			$("#check").attr("disabled",true);
+			$(document.body).off('keydown');
 			reload_button="<button id=\"reload\" onClick=\"reload()\">Reload</button>";
 			if(win){
 				$("#ui .board").append("<div class=\"alert alert-success\" role=\"alert\"><h3>You Win!</h3>"+reload_button+"</div>");
