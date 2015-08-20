@@ -21,14 +21,42 @@
 <body>
 	<div id="ui">
 	</div>
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">Options</h4>
+				</div>
+				<div class="modal-body">
+					<form id="addForm">
+						<input name="try" type="text" class="form-control" placeholder="Number of Try (default 10, max 20)"/><br/>
+						<input name="colors" type="text" class="form-control" placeholder="Number of Colors (default 6, max 10)"/><br/>
+						<input name="code" type="text" class="form-control" placeholder="Code Length (default 4, max 10)"/><br/>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" onClick="save();">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<script src="./js/vendor/jquery.min.js"></script>
   <script src="./js/bootstrap.min.js"></script>
+	<script src="./js/localforage.js"></script>
 	<script>
 		var ntry=0,cell=0,tcode="";
-		var board = {"try":3,"color":3,"code":2};
-
+		var board = {"try":10,"color":6,"code":4};
 		var m=new Mind();
-		m.generate(board.code,board.color);
+
+		localforage.getItem('board', function(err, b) {
+			if(b!=null){
+				board=b;
+			}
+			draw(board.try,board.color,board.code);
+			m.generate(board.code,board.color);
+		});
 
 		function draw(dtry,dcolor,dcode){
 			$("#ui").empty();
@@ -75,20 +103,19 @@
 			$("#ui .board #buttons").append($("<button id='options' onClick='opt()'>Options</button>"));
 			$("#ui .board #buttons").append($("<button id='clear' onClick='clear_try()'>Clear</button>"));
 			$("#ui .board #buttons").append($("<button id='check' onClick='check()'>Check</button>"));
-		}
-		draw(board.try,board.color,board.code);
 
-		//Events
-		$("#ui .board .select tr td div").click(function(){
-			if(cell<board.code){
-				var c=$(this).attr("class");
-				$($("#ui .board .current tr td")[cell]).append($(document.createElement("div")).addClass(c));
-				tcode+=c;
-				cell+=1;
-			}else{
-				$("#check").focus();
-			}
-		});
+			//Events
+			$("#ui .board .select tr td div").click(function(){
+				if(cell<board.code){
+					var c=$(this).attr("class");
+					$($("#ui .board .current tr td")[cell]).append($(document.createElement("div")).addClass(c));
+					tcode+=c;
+					cell+=1;
+				}else{
+					$("#check").focus();
+				}
+			});
+		}
 
 		function clear_try(){
 			$("#ui .board .current tr td").empty("div");
@@ -153,6 +180,30 @@
 			location.reload();
 		}
 
+		function opt(){
+			$("#myModal").modal('show');
+		}
+
+		function save(){
+			var t=$("#addForm input[name=try]").val(),co=$("#addForm input[name=colors]").val(),c=$("#addForm input[name=code]").val();
+			t=parseInt(t);co=parseInt(co);c=parseInt(c);
+			if(t!="" && t<=20 && t>0){
+				board.try=t;
+			}
+			if(co!="" && co<=10 && co>0){
+				board.color=co;
+			}
+			if(c!="" && c<=10 && c>0){
+				board.code=c;
+			}
+			console.log(board);
+			$("#addForm input[name=try]").val("");$("#addForm input[name=colors]").val("");$("#addForm input[name=code]").val("");
+			localforage.setItem('board', board, function(err, result) {
+      	//console.log(result);
+				reload();
+    	});
+			$("#myModal").modal('hide');
+		}
 	</script>
 </body>
 </html>
