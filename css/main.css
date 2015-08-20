@@ -1,6 +1,9 @@
 #ui {
   margin: 0% 10%;
-  max-width: 500px;
+  max-width: 60%;
+}
+#ui>h1 {
+  text-align: center;
 }
 #ui .game tr {
   margin:2px solid transparent;
@@ -28,8 +31,12 @@
 }
 .mini_circle .black { background-color: #000; }
 .mini_circle .white { background-color: #FFF; }
-.board {
+.game {
   float:right;
+}
+.board {
+  float: right;
+  margin-left: 5%;
 }
 .try {
   border:2px solid #000;
@@ -40,6 +47,10 @@
 .B { background-color: blue;}
 .V { background-color: purple;}
 .O { background-color: orange;}
+.N { background-color: black;}
+.W { background-color: white;}
+.A { background-color: grey;}
+.P { background-color: pink;}
 #buttons {
   margin-top:10px;
 }

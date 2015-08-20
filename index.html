@@ -20,54 +20,67 @@
 </head>
 <body>
 	<div id="ui">
-		<h1>JsMasterMind</h1>
 	</div>
 	<script src="./js/vendor/jquery.min.js"></script>
   <script src="./js/bootstrap.min.js"></script>
 	<script>
-    var m=new Mind();
-		m.generate();
-
 		var ntry=0,cell=0,tcode="";
+		var board = {"try":3,"color":3,"code":2};
 
-		$("#ui").append($(document.createElement("div")).addClass("board"));
-		$("#ui").append($(document.createElement("table")).addClass("game"));
+		var m=new Mind();
+		m.generate(board.code,board.color);
 
-		//Game Board
-		for(var i=0;i<10;i++){
-			$("#ui .game").append(document.createElement("tr"));
+		function draw(dtry,dcolor,dcode){
+			$("#ui").empty();
+			$("#ui").append("<h1>JsMasterMind</h1>");
+			$("#ui").append($(document.createElement("div")).addClass("board"));
+			$("#ui").append($(document.createElement("table")).addClass("game"));
+			//Game Board
+			for(var i=0;i<dtry;i++){
+				$("#ui .game").append(document.createElement("tr"));
+			}
+			for(var j=0;j<dcode;j++){
+				$("#ui .game tr").append($(document.createElement("td")).addClass("circle"));
+			}
+			$("#ui .circle").append($(document.createElement("div")).addClass("grey"));
+			$("#ui .game tr").append($(document.createElement("td")).addClass("result"));
+			$($("#ui .game tr")[ntry]).addClass("try");
+			$("#ui .game tr .result").append($("<table><tr class='first'></tr><tr class='second'></tr></table>"));
+			first=Math.ceil(dcode/2);
+			second=dcode-first;
+			for(var i=0;i<first;i++){
+				$("#ui .game tr .result .first").append(document.createElement("td"));
+			}
+			for(var i=0;i<second;i++){
+				$("#ui .game tr .result .second").append(document.createElement("td"));
+			}
+			$("#ui .game tr .result table td").addClass("mini_circle");
+			$("#ui .game .mini_circle").append($(document.createElement("div")).addClass("grey"));
+			// Select Board
+			$("#ui .board").append("<h1>Board</h1>");
+			$("#ui .board").append($(document.createElement("table")).addClass("select"));
+			$("#ui .board .select").append(document.createElement("tr"));
+			for(var j=0;j<dcolor;j++){
+				$("#ui .board .select tr").append($(document.createElement("td")).addClass("circle"));
+				$($("#ui .board .select tr td")[j]).append($(document.createElement("div")).addClass(m.dict[j]));
+			}
+			// Current Board
+			$("#ui .board").append("<h1 id=\"text\">Current Try</h1>");
+			$("#ui .board").append($(document.createElement("table")).addClass("current"));
+			$("#ui .board .current").append(document.createElement("tr"));
+			for(var j=0;j<dcode;j++){
+				$("#ui .board .current tr").append($(document.createElement("td")).addClass("circle"));
+			}
+			$("#ui .board").append($("<div id='buttons'></div>"));
+			$("#ui .board #buttons").append($("<button id='options' onClick='opt()'>Options</button>"));
+			$("#ui .board #buttons").append($("<button id='clear' onClick='clear_try()'>Clear</button>"));
+			$("#ui .board #buttons").append($("<button id='check' onClick='check()'>Check</button>"));
 		}
-		for(var j=0;j<4;j++){
-			$("#ui .game tr").append($(document.createElement("td")).addClass("circle"));
-		}
-		$("#ui .circle").append($(document.createElement("div")).addClass("grey"));
-		$("#ui .game tr").append($(document.createElement("td")).addClass("result"));
-		$($("#ui .game tr")[ntry]).addClass("try");
-		$("#ui .game tr .result").append($("<table><tr><td></td><td></td></tr><tr><td></td><td></td></tr></table>"));
-		$("#ui .game tr .result table td").addClass("mini_circle");
-		$("#ui .game .mini_circle").append($(document.createElement("div")).addClass("grey"));
-		// Select Board
-		$("#ui .board").append("<h1>Board</h1>");
-		$("#ui .board").append($(document.createElement("table")).addClass("select"));
-		$("#ui .board .select").append(document.createElement("tr"));
-		for(var j=0;j<6;j++){
-			$("#ui .board .select tr").append($(document.createElement("td")).addClass("circle"));
-			$($("#ui .board .select tr td")[j]).append($(document.createElement("div")).addClass(m.dict[j]));
-		}
-		// Current Board
-		$("#ui .board").append("<h1 id=\"text\">Current Try</h1>");
-		$("#ui .board").append($(document.createElement("table")).addClass("current"));
-		$("#ui .board .current").append(document.createElement("tr"));
-		for(var j=0;j<4;j++){
-			$("#ui .board .current tr").append($(document.createElement("td")).addClass("circle"));
-		}
-		$("#ui .board").append($("<div id='buttons'></div>"));
-		$("#ui .board #buttons").append($("<button id='clear' onClick='clear_try()'>Clear</button>"));
-		$("#ui .board #buttons").append($("<button id='check' onClick='check()'>Check</button>"));
+		draw(board.try,board.color,board.code);
 
 		//Events
 		$("#ui .board .select tr td div").click(function(){
-			if(cell<4){
+			if(cell<board.code){
 				var c=$(this).attr("class");
 				$($("#ui .board .current tr td")[cell]).append($(document.createElement("div")).addClass(c));
 				tcode+=c;
@@ -84,10 +97,10 @@
 		}
 
 		function check(){
-			if(tcode.length==4){
+			if(tcode.length==board.code){
 				//Draw this try
 				tr=$("#ui .game tr")[ntry*3];
-				for(var i=0;i<4;i++){
+				for(var i=0;i<board.code;i++){
 					current=$("#ui .board .current tr td")[i];
 					var c=$($(current).find("div")).attr("class");
 					td=$(tr).find("td.circle")[i];
@@ -103,10 +116,10 @@
 				}
 				//Update the try
 
-				if(r.p==4){
+				if(r.p==board.code){
 					solution(true);
 				}else{
-					if(ntry==9){
+					if(ntry==board.try-1){
 						solution(false);
 					}else{
 						$($("#ui .game tr")[ntry*3]).removeClass("try");

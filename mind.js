@@ -4,14 +4,22 @@ function rand(max,min){
 
 function Mind(){
   this.code="";
-  this.dict=["R","G","Y","B","V","O"];
+  this.dict=["R","G","Y","B","V","O","N","W","A","P"];
   this.p=0;
   this.c=0;
-  this.generate = function(){
+  this.codel=4;
+  this.colorl=6;
+  this.generate = function(codel=this.codel,colorl=this.colorl){
     this.code="";
-    for(var i=0;i<4;i++){
-      this.code+=this.dict[rand(0,this.dict.length)];
+    this.colorl=colorl;
+    this.codel=codel;
+    if(this.colorl<=this.dict.length){
+      for(var i=0;i<this.codel;i++){
+        this.code+=this.dict[rand(0,this.colorl)];
+      }
+      return true;
     }
+    return false;
   }
   this.check = function(word){
     this.p=0;this.c=0;
@@ -41,7 +49,7 @@ function Mind(){
     return this.p==other.p && this.c==other.c;
   }
   this.validate = function(code){
-    if(code.length!=4){return false;}
+    if(code.length!=this.codel){return false;}
     for(var i=0;i<code.length;i++){
       if(this.dict.indexOf(code[i])==-1){
         return false;
